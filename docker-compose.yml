@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  fastapi:
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    env_file: .env
+    build:
+      context: .
+    #   dockerfile: Dockerfile.dev
+    command: uvicorn app.app:app --reload --workers 1 --host 0.0.0.0 --port 5000 --log-level debug
+    volumes:
+      - .:/fastapi/
+    depends_on:
+      - postgres
+    ports:
+      - "5021:5021"
+
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
